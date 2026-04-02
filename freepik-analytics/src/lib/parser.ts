@@ -170,20 +170,38 @@ export function extractKeywords(assets: Asset[]): { keyword: string; count: numb
 }
 
 export function aggregateByMonth(assets: Asset[]) {
-  const map = new Map<string, { earnings: number; downloads: number; newAssets: number }>();
+  // Agrupar assets por mes
+  const map = new Map<string, { earnings: number; downloads: number; assetCount: number }>();
 
   for (const asset of assets) {
-    const existing = map.get(asset.month) || { earnings: 0, downloads: 0, newAssets: 0 };
+    const existing = map.get(asset.month) || { earnings: 0, downloads: 0, assetCount: 0 };
     map.set(asset.month, {
       earnings: existing.earnings + asset.earnings,
       downloads: existing.downloads + asset.downloads,
-      newAssets: existing.newAssets + 1,
+      assetCount: existing.assetCount + 1,
     });
   }
 
-  return Array.from(map.entries())
+  // Ordenar meses cronologicamente
+  const sortedMonths = Array.from(map.entries())
     .map(([month, data]) => ({ month, ...data }))
     .sort((a, b) => a.month.localeCompare(b.month));
+
+  // Calcular nuevos assets por mes (assets que aparecen por primera vez en ese mes)
+  const seenAssets = new Set<string>();
+  const result = sortedMonths.map((monthData) => {
+    const monthAssets = assets.filter((a) => a.month === monthData.month);
+    let newAssets = 0;
+    for (const asset of monthAssets) {
+      if (!seenAssets.has(asset.fileName)) {
+        seenAssets.add(asset.fileName);
+        newAssets++;
+      }
+    }
+    return { ...monthData, newAssets };
+  });
+
+  return result;
 }
 
 export function aggregateByType(assets: Asset[]) {
@@ -223,8 +241,8 @@ export function generateInsights(assets: Asset[]) {
     insights.push({
       id: "pareto",
       type: "neutral" as const,
-      title: "Pareto Principle",
-      description: `Your top 20% of assets (${top20Count} files) generate ${pct}% of total revenue.`,
+      title: "Principio de Pareto",
+      description: `Tu top 20% de assets (${top20Count} archivos) genera el ${pct}% de los ingresos totales.`,
       value: `${pct}%`,
     });
   }
@@ -235,8 +253,8 @@ export function generateInsights(assets: Asset[]) {
     insights.push({
       id: "zero_downloads",
       type: zeroDL > total * 0.3 ? ("warning" as const) : ("neutral" as const),
-      title: "Assets with Zero Downloads",
-      description: `${zeroDL} asset${zeroDL > 1 ? "s have" : " has"} never been downloaded. Consider refreshing titles or descriptions.`,
+      title: "Assets sin Descargas",
+      description: `${zeroDL} asset${zeroDL > 1 ? "s no han" : " no ha"} sido descargado${zeroDL > 1 ? "s" : ""}. Considera mejorar titulos o descripciones.`,
       value: `${zeroDL}`,
     });
   }
@@ -248,8 +266,8 @@ export function generateInsights(assets: Asset[]) {
     insights.push({
       id: "best_type",
       type: "positive" as const,
-      title: "Best Performing Asset Type",
-      description: `"${best.type}" is your top category with $${best.earnings.toFixed(2)} in total earnings across ${best.count} assets.`,
+      title: "Mejor Tipo de Asset",
+      description: `"${best.type}" es tu mejor categoria con ${formatCurrency(best.earnings)} en ganancias totales en ${best.count} assets.`,
       value: best.type,
     });
   }
@@ -261,9 +279,9 @@ export function generateInsights(assets: Asset[]) {
     insights.push({
       id: "best_epd",
       type: "tip" as const,
-      title: "Highest Revenue per Download",
-      description: `"${best.type}" earns $${best.earningsPerDownload.toFixed(4)} per download — your most efficient category.`,
-      value: `$${best.earningsPerDownload.toFixed(4)}`,
+      title: "Mayor Ingreso por Descarga",
+      description: `"${best.type}" genera ${formatCurrency(best.earningsPerDownload)} por descarga - tu categoria mas eficiente.`,
+      value: formatCurrency(best.earningsPerDownload),
     });
   }
 
@@ -283,8 +301,8 @@ export function generateInsights(assets: Asset[]) {
       insights.push({
         id: "keyword",
         type: "positive" as const,
-        title: `Keyword "${topKw.keyword}" Outperforms`,
-        description: `Assets containing "${topKw.keyword}" earn ${pct}% more than your average asset.`,
+        title: `Palabra clave "${topKw.keyword}" destaca`,
+        description: `Los assets con "${topKw.keyword}" generan ${pct}% mas que tu asset promedio.`,
         value: `+${pct}%`,
       });
     }
@@ -301,8 +319,8 @@ export function generateInsights(assets: Asset[]) {
         insights.push({
           id: "growth",
           type: growth > 0 ? ("positive" as const) : ("warning" as const),
-          title: "Monthly Earnings Trend",
-          description: `Your last recorded month showed ${growth > 0 ? "+" : ""}${growth.toFixed(1)}% earnings change vs the previous month.`,
+          title: "Tendencia Mensual",
+          description: `Tu ultimo mes registrado mostro ${growth > 0 ? "+" : ""}${growth.toFixed(1)}% de cambio en ganancias vs el mes anterior.`,
           value: `${growth > 0 ? "+" : ""}${growth.toFixed(1)}%`,
         });
       }
@@ -318,9 +336,9 @@ export function generateInsights(assets: Asset[]) {
       insights.push({
         id: "recommendation",
         type: "tip" as const,
-        title: "Reallocation Opportunity",
-        description: `Consider creating more "${byType[0].type}" assets and fewer "${underperforming[0].type}" — the revenue differential is significant.`,
-        value: "Tip",
+        title: "Oportunidad de Reasignacion",
+        description: `Considera crear mas assets "${byType[0].type}" y menos "${underperforming[0].type}" - la diferencia de ingresos es significativa.`,
+        value: "Consejo",
       });
     }
   }
@@ -329,9 +347,9 @@ export function generateInsights(assets: Asset[]) {
 }
 
 export function formatCurrency(n: number): string {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(n);
+  return new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", minimumFractionDigits: 2 }).format(n);
 }
 
 export function formatNumber(n: number): string {
-  return new Intl.NumberFormat("en-US").format(n);
+  return new Intl.NumberFormat("es-ES").format(n);
 }

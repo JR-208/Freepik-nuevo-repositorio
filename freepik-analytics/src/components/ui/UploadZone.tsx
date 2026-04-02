@@ -41,7 +41,7 @@ export function UploadZone({ existingAssets, uploadedFileNames, onUpload }: Uplo
 
         if (parsed.length === 0) {
           setFileStatuses((prev) =>
-            prev.map((s) => s.name === name ? { ...s, status: "error", error: "No valid rows found" } : s)
+            prev.map((s) => s.name === name ? { ...s, status: "error", error: "No se encontraron filas validas" } : s)
           );
           return;
         }
@@ -121,13 +121,13 @@ export function UploadZone({ existingAssets, uploadedFileNames, onUpload }: Uplo
           <Upload size={24} className={dragging ? "text-accent" : "text-text-muted"} />
         </div>
         <p className="text-text-primary font-500 mb-1">
-          {dragging ? "Drop your CSV files here" : "Drag & drop CSV files"}
+          {dragging ? "Suelta tus archivos CSV aqui" : "Arrastra y suelta archivos CSV"}
         </p>
         <p className="text-sm text-text-muted">
-          or click to browse · Multiple files supported
+          o haz clic para buscar - Multiples archivos soportados
         </p>
         <p className="text-xs text-text-muted mt-3 opacity-60">
-          Supports Freepik contributor exports · Auto-detects format
+          Soporta exportaciones de Freepik - Auto-detecta el formato
         </p>
       </div>
 
@@ -145,17 +145,17 @@ export function UploadZone({ existingAssets, uploadedFileNames, onUpload }: Uplo
                 {s.status === "done" && (
                   <span className="flex items-center gap-1 text-xs text-success">
                     <CheckCircle size={13} />
-                    {s.count} new assets
+                    {s.count} nuevos assets
                   </span>
                 )}
                 {s.status === "error" && (
                   <span className="flex items-center gap-1 text-xs text-danger">
                     <AlertCircle size={13} />
-                    {s.error || "Parse error"}
+                    {s.error || "Error al parsear"}
                   </span>
                 )}
                 {s.status === "duplicate" && (
-                  <span className="text-xs text-warning">Already uploaded</span>
+                  <span className="text-xs text-warning">Ya subido</span>
                 )}
                 <button onClick={() => removeStatus(s.name)} className="text-text-muted hover:text-text-secondary">
                   <X size={13} />

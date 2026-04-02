@@ -22,15 +22,15 @@ export function InsightsPage() {
     const recs = [];
 
     recs.push({
-      title: `Create more "${top.type}" assets`,
-      desc: `This is your top earning category with ${formatCurrency(top.earnings)} total. Doubling down here has the best proven ROI.`,
+      title: `Crea mas assets "${top.type}"`,
+      desc: `Esta es tu categoria con mas ganancias con ${formatCurrency(top.earnings)} en total. Duplicar esfuerzos aqui tiene el mejor ROI comprobado.`,
       priority: "high",
     });
 
     if (sorted[0].type !== top.type) {
       recs.push({
-        title: `Experiment with "${sorted[0].type}" efficiency`,
-        desc: `It has your highest revenue per download at $${sorted[0].earningsPerDownload.toFixed(4)}/DL. Even a few well-targeted assets could punch above their weight.`,
+        title: `Experimenta con la eficiencia de "${sorted[0].type}"`,
+        desc: `Tiene tu mayor ingreso por descarga con ${formatCurrency(sorted[0].earningsPerDownload)}/DL. Incluso unos pocos assets bien enfocados podrian rendir por encima de su peso.`,
         priority: "medium",
       });
     }
@@ -38,8 +38,8 @@ export function InsightsPage() {
     const lowestEPD = [...byType].filter((t) => t.downloads > 5).sort((a, b) => a.earningsPerDownload - b.earningsPerDownload)[0];
     if (lowestEPD && lowestEPD.type !== top.type) {
       recs.push({
-        title: `Reduce effort on "${lowestEPD.type}"`,
-        desc: `At $${lowestEPD.earningsPerDownload.toFixed(4)}/DL it has your lowest efficiency. Reallocating this effort to higher-performing types could meaningfully increase earnings.`,
+        title: `Reduce el esfuerzo en "${lowestEPD.type}"`,
+        desc: `Con ${formatCurrency(lowestEPD.earningsPerDownload)}/DL tiene tu menor eficiencia. Reasignar este esfuerzo a tipos de mejor rendimiento podria aumentar significativamente las ganancias.`,
         priority: "low",
       });
     }
@@ -51,8 +51,8 @@ export function InsightsPage() {
 
     if (zeroByType.length > 0) {
       recs.push({
-        title: `Refresh titles in "${zeroByType[0].type}"`,
-        desc: `${zeroByType[0].zeroCount} assets in this category have zero downloads. Better titles, tags, and descriptions could unlock latent traffic.`,
+        title: `Actualiza titulos en "${zeroByType[0].type}"`,
+        desc: `${zeroByType[0].zeroCount} assets en esta categoria tienen cero descargas. Mejores titulos, etiquetas y descripciones podrian desbloquear trafico latente.`,
         priority: "medium",
       });
     }
@@ -69,18 +69,24 @@ export function InsightsPage() {
     low: "text-text-muted bg-surface-2 border-border",
   };
 
+  const priorityLabels: Record<string, string> = {
+    high: "alta",
+    medium: "media",
+    low: "baja",
+  };
+
   return (
     <div className="p-8">
       <SectionHeader
-        title="Insights"
-        subtitle="Auto-generated analysis of your performance data"
+        title="Estadisticas"
+        subtitle="Analisis auto-generado de tus datos de rendimiento"
       />
 
       {/* Insights */}
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-4">
           <Lightbulb size={15} className="text-accent" />
-          <p className="text-sm font-500 text-text-secondary">Performance Insights</p>
+          <p className="text-sm font-500 text-text-secondary">Estadisticas de Rendimiento</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {insights.map((ins, i) => (
@@ -94,7 +100,7 @@ export function InsightsPage() {
         <div>
           <div className="flex items-center gap-2 mb-4">
             <Rocket size={15} className="text-accent" />
-            <p className="text-sm font-500 text-text-secondary">Recommendations</p>
+            <p className="text-sm font-500 text-text-secondary">Recomendaciones</p>
           </div>
           <div className="space-y-3">
             {recommendations.map((r, i) => (
@@ -104,7 +110,7 @@ export function InsightsPage() {
                 style={{ animationDelay: `${i * 60}ms`, animationFillMode: "forwards" }}
               >
                 <span className={`text-xs font-600 px-2 py-1 rounded-full border shrink-0 mt-0.5 ${priorityColor[r.priority]}`}>
-                  {r.priority}
+                  {priorityLabels[r.priority]}
                 </span>
                 <div>
                   <p className="text-sm font-500 text-text-primary mb-1">{r.title}</p>

@@ -37,19 +37,19 @@ export function TypesPage() {
 
   return (
     <div className="p-8">
-      <SectionHeader title="Asset Type Analysis" subtitle={`${byType.length} asset types`} />
+      <SectionHeader title="Analisis por Tipo de Asset" subtitle={`${byType.length} tipos de asset`} />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         {best && (
-          <KPICard title="Top Earning Type" value={best.type} icon={Star} color="warning" delay={0} />
+          <KPICard title="Tipo con Mas Ganancias" value={best.type} icon={Star} color="warning" delay={0} />
         )}
         {mostDownloaded && (
-          <KPICard title="Most Downloaded Type" value={mostDownloaded.type} icon={BarChart3} color="accent" delay={50} />
+          <KPICard title="Tipo Mas Descargado" value={mostDownloaded.type} icon={BarChart3} color="accent" delay={50} />
         )}
         {bestEPD && (
           <KPICard
-            title="Best Revenue/Download"
-            value={`$${bestEPD.earningsPerDownload.toFixed(4)}`}
+            title="Mejor Ingreso/Descarga"
+            value={formatCurrency(bestEPD.earningsPerDownload)}
             icon={TrendingUp}
             color="success"
             delay={100}
@@ -58,14 +58,14 @@ export function TypesPage() {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-6">
-        <ChartCard title="Earnings by Asset Type">
+        <ChartCard title="Ganancias por Tipo de Asset">
           <TypeBarChart
             data={earningsData}
             color="accent"
             formatValue={(v) => formatCurrency(v)}
           />
         </ChartCard>
-        <ChartCard title="Downloads by Asset Type">
+        <ChartCard title="Descargas por Tipo de Asset">
           <TypeBarChart
             data={downloadsData}
             color="success"
@@ -74,23 +74,23 @@ export function TypesPage() {
         </ChartCard>
       </div>
 
-      <ChartCard title="Earnings per Download by Type (efficiency)">
+      <ChartCard title="Ganancias por Descarga segun Tipo (eficiencia)">
         <TypeBarChart
           data={epdData}
           color="accent"
-          formatValue={(v) => `$${v.toFixed(4)}`}
+          formatValue={(v) => formatCurrency(v)}
         />
       </ChartCard>
 
       {/* Detail table */}
       <div className="card-base mt-6 overflow-hidden">
         <div className="px-5 py-4 border-b border-border">
-          <p className="text-sm font-500 text-text-secondary">Type Breakdown</p>
+          <p className="text-sm font-500 text-text-secondary">Desglose por Tipo</p>
         </div>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border">
-              {["Type", "Assets", "Downloads", "Earnings", "Avg Earnings", "Revenue/DL"].map((h) => (
+              {["Tipo", "Assets", "Descargas", "Ganancias", "Ganancia Prom", "Ingreso/DL"].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-xs font-500 text-text-muted">{h}</th>
               ))}
             </tr>
@@ -111,7 +111,7 @@ export function TypesPage() {
                   {t.count > 0 ? formatCurrency(t.earnings / t.count) : "—"}
                 </td>
                 <td className="px-4 py-3 text-text-secondary tabular-nums">
-                  {t.downloads > 0 ? `$${t.earningsPerDownload.toFixed(4)}` : "—"}
+                  {t.downloads > 0 ? formatCurrency(t.earningsPerDownload) : "—"}
                 </td>
               </tr>
             ))}

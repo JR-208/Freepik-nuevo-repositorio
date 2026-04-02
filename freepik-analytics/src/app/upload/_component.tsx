@@ -9,13 +9,16 @@ import { FileText, Trash2, Clock } from "lucide-react";
 export function UploadPage() {
   const { assets, uploadedFiles, addAssets, removeFile, clearAll, hydrated } = useStore();
 
+  // Contar assets unicos
+  const uniqueAssets = new Set(assets.map((a) => a.fileName)).size;
+
   if (!hydrated) return null;
 
   return (
     <div className="p-8 max-w-2xl">
       <SectionHeader
-        title="Upload CSV Files"
-        subtitle="Import your Freepik contributor monthly exports"
+        title="Subir Archivos CSV"
+        subtitle="Importa tus exportaciones mensuales de Freepik"
       />
 
       <UploadZone
@@ -29,14 +32,14 @@ export function UploadPage() {
         <div className="mt-8">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-500 text-text-secondary">
-              Uploaded files ({uploadedFiles.length})
+              Archivos subidos ({uploadedFiles.length})
             </p>
             <button
               onClick={clearAll}
               className="text-xs text-text-muted hover:text-danger transition-colors flex items-center gap-1"
             >
               <Trash2 size={11} />
-              Clear all data
+              Borrar todos los datos
             </button>
           </div>
           <div className="space-y-2">
@@ -48,9 +51,9 @@ export function UploadPage() {
                   <div className="flex items-center gap-3 mt-0.5">
                     <span className="text-xs text-text-muted flex items-center gap-1">
                       <Clock size={10} />
-                      {new Date(f.uploadedAt).toLocaleDateString()}
+                      {new Date(f.uploadedAt).toLocaleDateString("es-ES")}
                     </span>
-                    <span className="text-xs text-text-muted">{formatNumber(f.rowCount)} rows</span>
+                    <span className="text-xs text-text-muted">{formatNumber(f.rowCount)} filas</span>
                   </div>
                 </div>
                 <button
@@ -63,25 +66,25 @@ export function UploadPage() {
             ))}
           </div>
           <p className="text-xs text-text-muted mt-3">
-            Total: {formatNumber(assets.length)} unique assets in memory
+            Total: {formatNumber(uniqueAssets)} assets unicos en memoria
           </p>
         </div>
       )}
 
       {/* CSV format help */}
       <div className="mt-8 card-base p-5">
-        <p className="text-sm font-500 text-text-secondary mb-3">Expected CSV Format</p>
+        <p className="text-sm font-500 text-text-secondary mb-3">Formato de CSV Esperado</p>
         <p className="text-xs text-text-muted mb-3">
-          The parser auto-detects column names. Supported variants include:
+          El parser auto-detecta los nombres de columna. Variantes soportadas incluyen:
         </p>
         <div className="grid grid-cols-2 gap-2 text-xs">
           {[
-            ["asset id / id / file id", "Asset identifier"],
-            ["file name / name / title", "Asset name"],
-            ["downloads / nb downloads", "Download count"],
-            ["earnings / revenue / amount", "Revenue earned"],
-            ["type / asset type / category", "Asset category"],
-            ["description / keywords / tags", "Keywords"],
+            ["asset id / freepik asset id", "Identificador del asset"],
+            ["file name / name / title", "Nombre del asset"],
+            ["freepik downloads / downloads", "Conteo de descargas"],
+            ["freepik earnings eur / earnings", "Ganancias obtenidas"],
+            ["type / asset type / category", "Categoria del asset"],
+            ["description / keywords / tags", "Palabras clave"],
           ].map(([col, desc]) => (
             <div key={col} className="flex gap-2">
               <code className="bg-surface-2 px-1.5 py-0.5 rounded text-accent font-mono text-[11px]">{col}</code>
@@ -90,7 +93,7 @@ export function UploadPage() {
           ))}
         </div>
         <p className="text-xs text-text-muted mt-3 opacity-70">
-          Month is extracted from the filename (e.g. <code className="font-mono">2024-03.csv</code> or <code className="font-mono">march_2024.csv</code>).
+          El mes se extrae del nombre del archivo (ej. <code className="font-mono">2024-03.csv</code> o <code className="font-mono">march_2024.csv</code>).
         </p>
       </div>
     </div>

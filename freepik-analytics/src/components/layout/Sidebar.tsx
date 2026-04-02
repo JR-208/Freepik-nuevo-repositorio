@@ -10,12 +10,12 @@ import { cn } from "@/lib/cn";
 import type { UploadedFile } from "@/types";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Overview", icon: LayoutDashboard },
+  { href: "/", label: "Resumen", icon: LayoutDashboard },
   { href: "/assets", label: "Assets", icon: Package },
-  { href: "/types", label: "Asset Types", icon: BarChart3 },
-  { href: "/keywords", label: "Keywords", icon: Search },
-  { href: "/growth", label: "Growth", icon: TrendingUp },
-  { href: "/insights", label: "Insights", icon: Lightbulb },
+  { href: "/types", label: "Tipos de Asset", icon: BarChart3 },
+  { href: "/keywords", label: "Palabras Clave", icon: Search },
+  { href: "/growth", label: "Crecimiento", icon: TrendingUp },
+  { href: "/insights", label: "Estadisticas", icon: Lightbulb },
 ];
 
 interface SidebarProps {
@@ -45,7 +45,7 @@ export function Sidebar({ uploadedFiles, onRemoveFile, onClearAll, totalAssets }
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        <p className="text-xs text-text-muted uppercase tracking-widest px-2 mb-3 font-500">Dashboard</p>
+        <p className="text-xs text-text-muted uppercase tracking-widest px-2 mb-3 font-500">Panel</p>
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = pathname === href;
           return (
@@ -69,10 +69,10 @@ export function Sidebar({ uploadedFiles, onRemoveFile, onClearAll, totalAssets }
         {/* Files section */}
         <div className="pt-6">
           <p className="text-xs text-text-muted uppercase tracking-widest px-2 mb-3 font-500">
-            Files ({uploadedFiles.length})
+            Archivos ({uploadedFiles.length})
           </p>
           {uploadedFiles.length === 0 ? (
-            <p className="text-xs text-text-muted px-2">No files uploaded</p>
+            <p className="text-xs text-text-muted px-2">Sin archivos subidos</p>
           ) : (
             <div className="space-y-1">
               {uploadedFiles.map((f) => (
@@ -102,7 +102,7 @@ export function Sidebar({ uploadedFiles, onRemoveFile, onClearAll, totalAssets }
               className="text-xs text-text-muted hover:text-danger transition-colors flex items-center gap-1"
             >
               <Trash2 size={11} />
-              Clear all
+              Borrar todo
             </button>
           </div>
         )}
@@ -116,7 +116,7 @@ export function Sidebar({ uploadedFiles, onRemoveFile, onClearAll, totalAssets }
           )}
         >
           <Upload size={14} />
-          <span>Upload CSV</span>
+          <span>Subir CSV</span>
         </Link>
       </div>
     </aside>

@@ -35,23 +35,29 @@ export function KeywordsPage() {
 
   const formatVal = (v: number) => {
     if (tab === "earnings") return formatCurrency(v);
-    return v.toLocaleString();
+    return v.toLocaleString("es-ES");
   };
 
   if (!hydrated) return null;
   if (assets.length === 0) return <EmptyState />;
 
   const TABS: { key: Tab; label: string }[] = [
-    { key: "frequency", label: "Most Frequent" },
-    { key: "earnings", label: "Highest Earning" },
-    { key: "downloads", label: "Most Downloads" },
+    { key: "frequency", label: "Mas Frecuentes" },
+    { key: "earnings", label: "Mayores Ganancias" },
+    { key: "downloads", label: "Mas Descargas" },
   ];
+
+  const tabLabels: Record<Tab, string> = {
+    frequency: "frecuencia",
+    earnings: "ganancias",
+    downloads: "descargas",
+  };
 
   return (
     <div className="p-8">
       <SectionHeader
-        title="Keyword Insights"
-        subtitle={`${keywords.length} keywords extracted from titles & descriptions`}
+        title="Analisis de Palabras Clave"
+        subtitle={`${keywords.length} palabras clave extraidas de titulos y descripciones`}
       />
 
       {/* Tabs */}
@@ -74,7 +80,7 @@ export function KeywordsPage() {
 
       {/* Tag cloud */}
       <div className="card-base p-6 mb-6">
-        <p className="text-xs text-text-muted mb-4">Tag cloud — size represents {tab}</p>
+        <p className="text-xs text-text-muted mb-4">Nube de etiquetas — el tamano representa {tabLabels[tab]}</p>
         <div className="flex flex-wrap gap-2">
           {[...keywords].sort((a, b) => b.count - a.count).slice(0, 40).map((k) => {
             const size = 10 + (k.count / Math.max(...keywords.map((x) => x.count), 1)) * 16;
@@ -95,7 +101,7 @@ export function KeywordsPage() {
       <div className="card-base overflow-hidden">
         <div className="px-5 py-4 border-b border-border">
           <p className="text-sm font-500 text-text-secondary">
-            Top 30 keywords by {tab}
+            Top 30 palabras clave por {tabLabels[tab]}
           </p>
         </div>
         <div className="divide-y divide-border/50">

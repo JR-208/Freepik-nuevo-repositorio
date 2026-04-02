@@ -38,8 +38,8 @@ export function EarningsLineChart({ data }: EarningsChartProps) {
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="rgba(40,40,52,0.8)" />
         <XAxis dataKey="month" tick={{ fill: "#5a5a6e", fontSize: 11 }} axisLine={false} tickLine={false} />
-        <YAxis tick={{ fill: "#5a5a6e", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}`} />
-        <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [`$${v.toFixed(2)}`, "Earnings"]} />
+        <YAxis tick={{ fill: "#5a5a6e", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `€${v}`} />
+        <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [`€${v.toFixed(2)}`, "Ganancias"]} />
         <Area type="monotone" dataKey="earnings" stroke="#63b3ed" strokeWidth={2} fill="url(#earningsGrad)" dot={false} activeDot={{ r: 4, fill: "#63b3ed" }} />
       </AreaChart>
     </ResponsiveContainer>
@@ -63,7 +63,7 @@ export function DownloadsLineChart({ data }: DownloadsChartProps) {
         <CartesianGrid strokeDasharray="3 3" stroke="rgba(40,40,52,0.8)" />
         <XAxis dataKey="month" tick={{ fill: "#5a5a6e", fontSize: 11 }} axisLine={false} tickLine={false} />
         <YAxis tick={{ fill: "#5a5a6e", fontSize: 11 }} axisLine={false} tickLine={false} />
-        <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [v.toLocaleString(), "Downloads"]} />
+        <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [v.toLocaleString("es-ES"), "Descargas"]} />
         <Area type="monotone" dataKey="downloads" stroke="#48c78e" strokeWidth={2} fill="url(#downloadsGrad)" dot={false} activeDot={{ r: 4, fill: "#48c78e" }} />
       </AreaChart>
     </ResponsiveContainer>
@@ -108,9 +108,9 @@ export function GrowthChart({ data }: GrowthChartProps) {
         <XAxis dataKey="month" tick={{ fill: "#5a5a6e", fontSize: 11 }} axisLine={false} tickLine={false} />
         <YAxis tick={{ fill: "#5a5a6e", fontSize: 11 }} axisLine={false} tickLine={false} />
         <Tooltip contentStyle={tooltipStyle} />
-        <Line type="monotone" dataKey="earnings" stroke={CHART_COLORS.accent} strokeWidth={2} dot={false} name="Earnings ($)" />
-        <Line type="monotone" dataKey="downloads" stroke={CHART_COLORS.success} strokeWidth={2} dot={false} name="Downloads" />
-        <Line type="monotone" dataKey="newAssets" stroke={CHART_COLORS.warning} strokeWidth={2} dot={false} name="New Assets" />
+        <Line type="monotone" dataKey="earnings" stroke={CHART_COLORS.accent} strokeWidth={2} dot={false} name="Ganancias (€)" />
+        <Line type="monotone" dataKey="downloads" stroke={CHART_COLORS.success} strokeWidth={2} dot={false} name="Descargas" />
+        <Line type="monotone" dataKey="newAssets" stroke={CHART_COLORS.warning} strokeWidth={2} dot={false} name="Nuevos Assets" />
       </LineChart>
     </ResponsiveContainer>
   );

@@ -36,13 +36,13 @@ export function GrowthPage() {
   return (
     <div className="p-8">
       <SectionHeader
-        title="Growth"
-        subtitle={`${monthly.length} months of data`}
+        title="Crecimiento"
+        subtitle={`${monthly.length} meses de datos`}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <KPICard
-          title={`Last Month Earnings (${lastMonth?.month || "—"})`}
+          title={`Ganancias Ultimo Mes (${lastMonth?.month || "—"})`}
           value={lastMonth ? formatCurrency(lastMonth.earnings) : "—"}
           change={earningsGrowth !== null ? `${earningsGrowth > 0 ? "+" : ""}${earningsGrowth.toFixed(1)}%` : undefined}
           changePositive={earningsGrowth !== null && earningsGrowth >= 0}
@@ -51,7 +51,7 @@ export function GrowthPage() {
           delay={0}
         />
         <KPICard
-          title="Last Month Downloads"
+          title="Descargas Ultimo Mes"
           value={lastMonth ? formatNumber(lastMonth.downloads) : "—"}
           change={downloadsGrowth !== null ? `${downloadsGrowth > 0 ? "+" : ""}${downloadsGrowth.toFixed(1)}%` : undefined}
           changePositive={downloadsGrowth !== null && downloadsGrowth >= 0}
@@ -60,7 +60,7 @@ export function GrowthPage() {
           delay={50}
         />
         <KPICard
-          title="Months Tracked"
+          title="Meses Registrados"
           value={String(monthly.length)}
           icon={Calendar}
           color="warning"
@@ -68,15 +68,15 @@ export function GrowthPage() {
         />
       </div>
 
-      <ChartCard title="Combined Growth (Earnings · Downloads · New Assets)" className="mb-4">
+      <ChartCard title="Crecimiento Combinado (Ganancias - Descargas - Nuevos Assets)" className="mb-4">
         <GrowthChart data={monthly} />
       </ChartCard>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-6">
-        <ChartCard title="Monthly Earnings">
+        <ChartCard title="Ganancias Mensuales">
           <EarningsLineChart data={monthly} />
         </ChartCard>
-        <ChartCard title="Monthly Downloads">
+        <ChartCard title="Descargas Mensuales">
           <DownloadsLineChart data={monthly} />
         </ChartCard>
       </div>
@@ -84,12 +84,12 @@ export function GrowthPage() {
       {/* Monthly table */}
       <div className="card-base overflow-hidden">
         <div className="px-5 py-4 border-b border-border">
-          <p className="text-sm font-500 text-text-secondary">Monthly Breakdown</p>
+          <p className="text-sm font-500 text-text-secondary">Desglose Mensual</p>
         </div>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border">
-              {["Month", "New Assets", "Downloads", "Earnings", "Avg Earning/Asset"].map((h) => (
+              {["Mes", "Nuevos Assets", "Descargas", "Ganancias", "Ganancia Prom/Asset"].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-xs font-500 text-text-muted">{h}</th>
               ))}
             </tr>
@@ -102,7 +102,7 @@ export function GrowthPage() {
                 <td className="px-4 py-3 text-text-secondary tabular-nums">{formatNumber(m.downloads)}</td>
                 <td className="px-4 py-3 text-text-primary font-500 tabular-nums">{formatCurrency(m.earnings)}</td>
                 <td className="px-4 py-3 text-text-secondary tabular-nums">
-                  {m.newAssets > 0 ? formatCurrency(m.earnings / m.newAssets) : "—"}
+                  {m.assetCount > 0 ? formatCurrency(m.earnings / m.assetCount) : "—"}
                 </td>
               </tr>
             ))}

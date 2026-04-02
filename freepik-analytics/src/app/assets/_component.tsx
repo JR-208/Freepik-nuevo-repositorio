@@ -87,8 +87,8 @@ export function AssetsPage() {
   return (
     <div className="p-8">
       <SectionHeader
-        title="Asset Performance"
-        subtitle={`${formatNumber(assets.length)} total assets`}
+        title="Rendimiento de Assets"
+        subtitle={`${formatNumber(assets.length)} registros totales`}
       />
 
       {/* Filters */}
@@ -97,7 +97,7 @@ export function AssetsPage() {
           <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
           <input
             type="text"
-            placeholder="Search assets…"
+            placeholder="Buscar assets..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(0); }}
             className="w-full bg-surface-1 border border-border rounded-lg pl-8 pr-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent/40 transition-colors"
@@ -115,7 +115,7 @@ export function AssetsPage() {
                   : "bg-surface-1 text-text-secondary border border-border hover:border-accent/20"
               )}
             >
-              {t === "all" ? "All Types" : t}
+              {t === "all" ? "Todos los Tipos" : t}
             </button>
           ))}
         </div>
@@ -123,9 +123,9 @@ export function AssetsPage() {
 
       {/* Legend */}
       <div className="flex gap-4 mb-4 text-xs text-text-muted">
-        <span className="flex items-center gap-1.5"><Trophy size={11} className="text-warning" /> Top 10 Earnings</span>
-        <span className="flex items-center gap-1.5"><Trophy size={11} className="text-accent" /> Top 10 Downloads</span>
-        <span className="flex items-center gap-1.5"><AlertCircle size={11} className="text-danger" /> Zero Downloads</span>
+        <span className="flex items-center gap-1.5"><Trophy size={11} className="text-warning" /> Top 10 Ganancias</span>
+        <span className="flex items-center gap-1.5"><Trophy size={11} className="text-accent" /> Top 10 Descargas</span>
+        <span className="flex items-center gap-1.5"><AlertCircle size={11} className="text-danger" /> Sin Descargas</span>
       </div>
 
       {/* Table */}
@@ -135,10 +135,10 @@ export function AssetsPage() {
             <thead>
               <tr className="border-b border-border">
                 {[
-                  { key: "fileName" as SortKey, label: "Asset Name" },
-                  { key: "assetType" as SortKey, label: "Type" },
-                  { key: "downloads" as SortKey, label: "Downloads" },
-                  { key: "earnings" as SortKey, label: "Earnings" },
+                  { key: "fileName" as SortKey, label: "Nombre del Asset" },
+                  { key: "assetType" as SortKey, label: "Tipo" },
+                  { key: "downloads" as SortKey, label: "Descargas" },
+                  { key: "earnings" as SortKey, label: "Ganancias" },
                 ].map(({ key, label }) => (
                   <th
                     key={key}
@@ -150,8 +150,8 @@ export function AssetsPage() {
                     </span>
                   </th>
                 ))}
-                <th className="px-4 py-3 text-left text-xs font-500 text-text-muted">Month</th>
-                <th className="px-4 py-3 text-left text-xs font-500 text-text-muted">Link</th>
+                <th className="px-4 py-3 text-left text-xs font-500 text-text-muted">Mes</th>
+                <th className="px-4 py-3 text-left text-xs font-500 text-text-muted">Enlace</th>
               </tr>
             </thead>
             <tbody>
@@ -204,7 +204,7 @@ export function AssetsPage() {
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-border">
             <p className="text-xs text-text-muted">
-              Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} of {formatNumber(filtered.length)}
+              Mostrando {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} de {formatNumber(filtered.length)}
             </p>
             <div className="flex gap-2">
               <button
@@ -212,7 +212,7 @@ export function AssetsPage() {
                 disabled={page === 0}
                 className="px-3 py-1 text-xs rounded-lg bg-surface-2 text-text-secondary disabled:opacity-30 hover:bg-surface-3 transition-colors"
               >
-                Prev
+                Anterior
               </button>
               <span className="px-3 py-1 text-xs text-text-muted">{page + 1} / {totalPages}</span>
               <button
@@ -220,7 +220,7 @@ export function AssetsPage() {
                 disabled={page === totalPages - 1}
                 className="px-3 py-1 text-xs rounded-lg bg-surface-2 text-text-secondary disabled:opacity-30 hover:bg-surface-3 transition-colors"
               >
-                Next
+                Siguiente
               </button>
             </div>
           </div>
