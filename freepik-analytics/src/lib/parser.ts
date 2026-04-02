@@ -20,15 +20,36 @@ const STOPWORDS = new Set([
 ]);
 
 function extractMonth(filename: string): string {
-  // Try YYYY-MM pattern
+  // Try MM_YYYY or MM-YYYY pattern (e.g., assets_report_03_2026)
+  const m0 = filename.match(/(\d{2})[_\-](\d{4})/);
+  if (m0) {
+    const month = m0[1];
+    const year = m0[2];
+    // Validar que el mes sea valido (01-12)
+    if (parseInt(month, 10) >= 1 && parseInt(month, 10) <= 12) {
+      return `${year}-${month}`;
+    }
+  }
+  
+  // Try YYYY-MM or YYYY_MM pattern
   const m1 = filename.match(/(\d{4})[_\-](\d{2})/);
-  if (m1) return `${m1[1]}-${m1[2]}`;
+  if (m1) {
+    const year = m1[1];
+    const month = m1[2];
+    // Validar que el mes sea valido (01-12)
+    if (parseInt(month, 10) >= 1 && parseInt(month, 10) <= 12) {
+      return `${year}-${month}`;
+    }
+  }
+  
   // Try month name + year
   const months: Record<string, string> = {
     january:"01",february:"02",march:"03",april:"04",may:"05",june:"06",
     july:"07",august:"08",september:"09",october:"10",november:"11",december:"12",
-    jan:"01",feb:"02",mar:"03",apr:"04",jun:"06",jul:"07",aug:"08",
+    jan:"01",feb:"02",mar:"03",apr:"04",may:"05",jun:"06",jul:"07",aug:"08",
     sep:"09",oct:"10",nov:"11",dec:"12",
+    enero:"01",febrero:"02",marzo:"03",abril:"04",mayo:"05",junio:"06",
+    julio:"07",agosto:"08",septiembre:"09",octubre:"10",noviembre:"11",diciembre:"12",
   };
   const lower = filename.toLowerCase();
   for (const [name, num] of Object.entries(months)) {
