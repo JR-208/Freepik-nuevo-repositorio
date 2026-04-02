@@ -56,14 +56,14 @@ function normalizeRow(row: Record<string, string>, month: string): Asset | null 
     return "";
   };
 
-  const assetId = get(["asset id","assetid","id","asset_id","file id","fileid"]);
+  const assetId = get(["asset id","assetid","id","asset_id","file id","fileid","freepik asset id"]);
   const fileName = get(["file name","filename","name","title","file_name","asset name"]);
   const description = get(["description","desc","keywords","tags","keyword"]);
-  const url = get(["url","link","asset url","file url","download url"]);
+  const url = get(["url","link","asset url","file url","download url","asset public url"]);
   const assetType = get(["type","asset type","file type","assettype","category","format"]) || "Unknown";
 
-  const rawDownloads = get(["downloads","download","total downloads","nb downloads","num downloads"]);
-  const rawEarnings = get(["earnings","revenue","amount","total earnings","income","total revenue","earning"]);
+  const rawDownloads = get(["downloads","download","total downloads","nb downloads","num downloads","freepik downloads"]);
+  const rawEarnings = get(["earnings","revenue","amount","total earnings","income","total revenue","earning","freepik earnings eur","freepik earnings"]);
 
   const downloads = parseInt(rawDownloads.replace(/[^0-9]/g, ""), 10) || 0;
   const earnings = parseFloat(rawEarnings.replace(/[^0-9.]/g, "")) || 0;
