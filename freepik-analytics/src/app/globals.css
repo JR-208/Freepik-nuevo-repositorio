@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --surface-0: 10 10 12;
+  --surface-1: 16 16 20;
+  --surface-2: 22 22 28;
+  --surface-3: 32 32 40;
+  --accent: 99 179 237;
+  --accent-soft: 99 179 237;
+  --success: 72 199 142;
+  --warning: 255 180 0;
+  --danger: 252 90 90;
+  --text-primary: 240 240 248;
+  --text-secondary: 160 160 180;
+  --text-muted: 90 90 110;
+  --border: 40 40 52;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  background: rgb(var(--surface-0));
+  color: rgb(var(--text-primary));
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: rgb(var(--surface-0));
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--surface-1));
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--surface-3));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--text-muted));
+}
+
+/* Grid dots background */
+.bg-grid {
+  background-image: radial-gradient(circle, rgba(99,179,237,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Glow effects */
+.glow-accent {
+  box-shadow: 0 0 20px rgba(99,179,237,0.15);
+}
+.glow-success {
+  box-shadow: 0 0 20px rgba(72,199,142,0.15);
+}
+
+/* Chart tooltip */
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}
+
+/* Animated border gradient */
+@keyframes borderRotate {
+  from { --border-angle: 0deg; }
+  to { --border-angle: 360deg; }
+}
+
+.card-base {
+  background: rgb(var(--surface-1));
+  border: 1px solid rgb(var(--border));
+  border-radius: 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.card-base:hover {
+  border-color: rgba(99,179,237,0.25);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+/* Staggered animation helpers */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+/* Table hover */
+.table-row-hover:hover {
+  background: rgba(99,179,237,0.04);
+}
