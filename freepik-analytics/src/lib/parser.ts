@@ -373,3 +373,159 @@ export function formatCurrency(n: number): string {
 export function formatNumber(n: number): string {
   return new Intl.NumberFormat("es-ES").format(n);
 }
+
+// ── Exportacion para IA ────────────────────────────────────────────────────
+
+export function buildAIExport(assets: Asset[]) {
+  if (assets.length === 0) return null;
+
+  const totalEarnings = assets.reduce((s, a) => s + a.earnings, 0);
+  const totalDownloads = assets.reduce((s, a) => s + a.downloads, 0);
+  const months = [...new Set(assets.map((a) => a.month))].sort();
+
+  // Agregar por nombre de archivo (mismo asset en distintos meses)
+  const byFile = new Map<string, { fileName: string; assetType: string; earnings: number; downloads: number; months: string[] }>();
+  for (const a of assets) {
+    const prev = byFile.get(a.fileName) ?? { fileName: a.fileName, assetType: a.assetType, earnings: 0, downloads: 0, months: [] };
+    byFile.set(a.fileName, {
+      ...prev,
+      earnings: prev.earnings + a.earnings,
+      downloads: prev.downloads + a.downloads,
+      months: prev.months.includes(a.month) ? prev.months : [...prev.months, a.month].sort(),
+    });
+  }
+  const allFiles = [...byFile.values()];
+  const sorted = [...allFiles].sort((a, b) => b.earnings - a.earnings);
+
+  // Top items
+  const top_items = sorted.slice(0, 10).map((a, i) => ({
+    posicion: i + 1,
+    nombre: a.fileName,
+    tipo: a.assetType,
+    ganancias_eur: parseFloat(a.earnings.toFixed(4)),
+    descargas: a.downloads,
+    ingreso_por_descarga: a.downloads > 0 ? parseFloat((a.earnings / a.downloads).toFixed(4)) : 0,
+    meses_activo: a.months.length,
+  }));
+
+  // Tendencias mensuales
+  const monthly = aggregateByMonth(assets);
+  const tendencias = monthly.map((m, i) => {
+    const prev = monthly[i - 1];
+    const delta = prev && prev.earnings > 0 ? ((m.earnings - prev.earnings) / prev.earnings) * 100 : null;
+    return {
+      mes: m.month,
+      ganancias_eur: parseFloat(m.earnings.toFixed(4)),
+      descargas: m.downloads,
+      assets_nuevos: m.newAssets,
+      cambio_pct: delta !== null ? parseFloat(delta.toFixed(1)) : null,
+    };
+  });
+
+  // Por tipo
+  const byType = aggregateByType(assets);
+
+  // Oportunidades
+  const zeroDL = allFiles.filter((a) => a.downloads === 0);
+  const avgEarnings = totalEarnings / allFiles.length;
+  const topType = byType[0];
+  const worstType = [...byType].filter((t) => t.count >= 2).sort((a, b) => a.earningsPerDownload - b.earningsPerDownload)[0];
+
+  const oportunidades: { tipo: string; descripcion: string }[] = [];
+  if (zeroDL.length > 0) {
+    oportunidades.push({
+      tipo: "sin_descargas",
+      descripcion: `${zeroDL.length} assets nunca han sido descargados. Revisar titulos, descripciones y keywords podria aumentar su visibilidad.`,
+    });
+  }
+  if (topType) {
+    oportunidades.push({
+      tipo: "tipo_estrella",
+      descripcion: `El tipo "${topType.type}" tiene el mayor rendimiento (${topType.earnings.toFixed(2)} EUR). Crear mas contenido de este tipo podria aumentar ingresos.`,
+    });
+  }
+  if (worstType && topType && worstType.type !== topType.type) {
+    oportunidades.push({
+      tipo: "reasignacion",
+      descripcion: `El tipo "${worstType.type}" tiene bajo ingreso por descarga (${worstType.earningsPerDownload.toFixed(4)} EUR/descarga). Considera redirigir esfuerzo hacia "${topType.type}".`,
+    });
+  }
+  const lastTwo = monthly.slice(-2);
+  if (lastTwo.length === 2 && lastTwo[0].earnings > 0) {
+    const growth = ((lastTwo[1].earnings - lastTwo[0].earnings) / lastTwo[0].earnings) * 100;
+    if (growth < -10) {
+      oportunidades.push({
+        tipo: "caida_ingresos",
+        descripcion: `Los ingresos cayeron ${Math.abs(growth).toFixed(1)}% en el ultimo mes. Analizar que assets perdieron descargas podria identificar la causa.`,
+      });
+    } else if (growth > 10) {
+      oportunidades.push({
+        tipo: "crecimiento",
+        descripcion: `Los ingresos crecieron ${growth.toFixed(1)}% en el ultimo mes. Identificar que assets impulsaron ese crecimiento y replicar su estrategia.`,
+      });
+    }
+  }
+
+  return {
+    resumen_general: {
+      total_assets_unicos: allFiles.length,
+      total_registros: assets.length,
+      meses_analizados: months.length,
+      rango_temporal: months.length > 0 ? `${months[0]} a ${months[months.length - 1]}` : "—",
+      ganancias_totales_eur: parseFloat(totalEarnings.toFixed(4)),
+      descargas_totales: totalDownloads,
+      ingreso_promedio_por_asset: parseFloat((totalEarnings / (allFiles.length || 1)).toFixed(4)),
+      assets_sin_descargas: zeroDL.length,
+      por_tipo: byType.map((t) => ({
+        tipo: t.type,
+        assets: t.count,
+        ganancias_eur: parseFloat(t.earnings.toFixed(4)),
+        descargas: t.downloads,
+        eur_por_descarga: parseFloat(t.earningsPerDownload.toFixed(4)),
+      })),
+    },
+    top_items,
+    tendencias,
+    oportunidades,
+  };
+}
+
+export function buildAIPrompt(assets: Asset[]): string {
+  const data = buildAIExport(assets);
+  if (!data) return "";
+  const { resumen_general: r, top_items, tendencias, oportunidades } = data;
+
+  const meses = tendencias.map((t) => `  - ${t.mes}: ${t.ganancias_eur} EUR, ${t.descargas} descargas, ${t.assets_nuevos} nuevos`).join("\n");
+  const tops = top_items.slice(0, 5).map((t, i) => `  ${i + 1}. "${t.nombre}" (${t.tipo}): ${t.ganancias_eur} EUR, ${t.descargas} descargas`).join("\n");
+  const ops = oportunidades.map((o) => `  - [${o.tipo}] ${o.descripcion}`).join("\n");
+
+  return `Eres un experto en monetizacion de contenido creativo en plataformas como Freepik.
+
+Aqui tienes mis datos de rendimiento como contribuidor:
+
+== RESUMEN ==
+- Assets unicos: ${r.total_assets_unicos}
+- Meses analizados: ${r.meses_analizados} (${r.rango_temporal})
+- Ganancias totales: ${r.ganancias_totales_eur} EUR
+- Descargas totales: ${r.descargas_totales}
+- Ingreso promedio por asset: ${r.ingreso_promedio_por_asset} EUR
+- Assets sin ninguna descarga: ${r.assets_sin_descargas}
+
+== TOP 5 ASSETS ==
+${tops}
+
+== TENDENCIA MENSUAL ==
+${meses}
+
+== OPORTUNIDADES DETECTADAS ==
+${ops}
+
+Por favor:
+1. Analiza mis datos y dame un diagnostico claro de mi situacion actual.
+2. Identifica patrones en mis mejores y peores contenidos.
+3. Dame al menos 5 recomendaciones concretas y accionables para aumentar mis ingresos.
+4. Sugiere una estrategia de contenido para los proximos 3 meses basada en estos datos.
+5. Identifica cualquier riesgo o tendencia negativa que deba atender con urgencia.
+
+Sé directo, especifico y basa todas tus recomendaciones en los datos proporcionados.`;
+}
