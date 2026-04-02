@@ -44,8 +44,10 @@ export function useStore() {
   const addAssets = useCallback(
     (newAssets: Asset[], file: UploadedFile) => {
       setAssets((prev) => {
-        const existingIds = new Set(prev.map((a) => a.assetId));
-        const unique = newAssets.filter((a) => !existingIds.has(a.assetId));
+        // Usar fileName + month como clave unica para evitar duplicados del mismo archivo en el mismo mes
+        // Pero permitir el mismo archivo en diferentes meses (diferentes reportes CSV)
+        const existingKeys = new Set(prev.map((a) => `${a.fileName}::${a.month}`));
+        const unique = newAssets.filter((a) => !existingKeys.has(`${a.fileName}::${a.month}`));
         const merged = [...prev, ...unique];
         const newFiles = [...uploadedFiles, file];
         saveToStorage({ assets: merged, uploadedFiles: newFiles });

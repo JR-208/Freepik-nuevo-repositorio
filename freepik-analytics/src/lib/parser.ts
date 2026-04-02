@@ -20,9 +20,29 @@ const STOPWORDS = new Set([
 ]);
 
 function extractMonth(filename: string): string {
-  // Try YYYY-MM pattern
+  // Try MM_YYYY or MM-YYYY pattern (e.g., "assets_report_03_2026" -> "2026-03")
+  const m0 = filename.match(/(\d{2})[_\-](\d{4})/);
+  if (m0) {
+    const month = m0[1];
+    const year = m0[2];
+    // Validate month is between 01 and 12
+    const monthNum = parseInt(month, 10);
+    if (monthNum >= 1 && monthNum <= 12) {
+      return `${year}-${month}`;
+    }
+  }
+  
+  // Try YYYY-MM or YYYY_MM pattern (e.g., "2024-03" or "2024_03")
   const m1 = filename.match(/(\d{4})[_\-](\d{2})/);
-  if (m1) return `${m1[1]}-${m1[2]}`;
+  if (m1) {
+    const year = m1[1];
+    const month = m1[2];
+    const monthNum = parseInt(month, 10);
+    if (monthNum >= 1 && monthNum <= 12) {
+      return `${year}-${month}`;
+    }
+  }
+  
   // Try month name + year
   const months: Record<string, string> = {
     january:"01",february:"02",march:"03",april:"04",may:"05",june:"06",
